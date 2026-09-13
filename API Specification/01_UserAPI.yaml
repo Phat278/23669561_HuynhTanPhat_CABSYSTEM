@@ -72,6 +72,7 @@ paths:
 
 
   /users/{userId}:
+
     get:
       tags:
         - User API
@@ -121,6 +122,31 @@ paths:
           description: Cập nhật thành công
         '400':
           description: Dữ liệu không hợp lệ
+
+
+    delete:
+      tags:
+        - User API
+      summary: Xóa tài khoản người dùng
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID của người dùng cần xóa
+          schema:
+            type: integer
+
+      responses:
+        '204':
+          description: Xóa tài khoản thành công
+        '401':
+          description: Chưa xác thực
+        '404':
+          description: Không tìm thấy người dùng
 
 
 components:
