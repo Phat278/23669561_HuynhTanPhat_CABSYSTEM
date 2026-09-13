@@ -1,1 +1,133 @@
+openapi: 3.0.3
+info:
+  title: CAB System - History API
+  description: API xem lịch sử chuyến đi và giao dịch.
+  version: 1.0.0
 
+servers:
+  - url: http://localhost:8080/api
+
+tags:
+  - name: History API
+    description: APIs for ride and transaction history
+
+paths:
+
+  /customers/{customerId}/rides:
+    get:
+      tags:
+        - History API
+      summary: Get customer ride history
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CustomerId'
+      responses:
+        '200':
+          description: Customer ride history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RideHistory'
+
+  /drivers/{driverId}/rides/history:
+    get:
+      tags:
+        - History API
+      summary: Get driver ride history
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/DriverId'
+      responses:
+        '200':
+          description: Driver ride history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RideHistory'
+
+  /transactions:
+    get:
+      tags:
+        - History API
+      summary: Get transaction history
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Transaction history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+
+    CustomerId:
+      name: customerId
+      in: path
+      required: true
+      schema:
+        type: string
+
+    DriverId:
+      name: driverId
+      in: path
+      required: true
+      schema:
+        type: string
+
+  schemas:
+
+    RideHistory:
+      type: object
+      properties:
+        rideId:
+          type: string
+        pickupLocation:
+          type: string
+        destination:
+          type: string
+        vehicleType:
+          type: string
+        finalFare:
+          type: number
+          format: double
+        status:
+          type: string
+        completedAt:
+          type: string
+          format: date-time
+
+    Transaction:
+      type: object
+      properties:
+        transactionId:
+          type: string
+        rideId:
+          type: string
+        amount:
+          type: number
+          format: double
+        paymentMethod:
+          type: string
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
