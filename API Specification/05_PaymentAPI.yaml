@@ -1,1 +1,121 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Payment API
+  description: API tính cước và xử lý thanh toán chuyến xe.
+  version: 1.0.0
 
+servers:
+  - url: http://localhost:8080/api
+
+tags:
+  - name: Payment API
+    description: APIs for fare calculation and payment
+
+paths:
+
+  /payments/{rideId}/fare:
+    get:
+      tags:
+        - Payment API
+      summary: Get ride fare
+      description: Get estimated or final fare of a ride.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RideId'
+      responses:
+        '200':
+          description: Fare information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fare'
+
+  /payments/{rideId}:
+    post:
+      tags:
+        - Payment API
+      summary: Make payment
+      description: Customer pays for a completed ride using cash or electronic payment.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RideId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+      responses:
+        '200':
+          description: Payment processed successfully
+        '400':
+          description: Payment failed
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    RideId:
+      name: rideId
+      in: path
+      required: true
+      schema:
+        type: string
+
+  schemas:
+
+    Fare:
+      type: object
+      properties:
+        rideId:
+          type: string
+        amount:
+          type: number
+          format: double
+        currency:
+          type: string
+          example: VND
+
+    PaymentRequest:
+      type: object
+      required:
+        - method
+      properties:
+        method:
+          type: string
+          enum:
+            - CASH
+            - ELECTRONIC
+        transactionId:
+          type: string
+          nullable: true
+          description: Transaction ID returned by external payment provider
+
+    Payment:
+      type: object
+      properties:
+        paymentId:
+          type: string
+        rideId:
+          type: string
+        amount:
+          type: number
+          format: double
+        method:
+          type: string
+        status:
+          type: string
+          enum:
+            - PENDING
+            - SUCCESS
+            - FAILED
+        transactionId:
+          type: string
+          nullable: true
