@@ -1,1 +1,153 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Ride API
+  description: API quản lý yêu cầu đặt xe và trạng thái chuyến đi.
+  version: 1.0.0
 
+servers:
+  - url: http://localhost:8080/api
+
+tags:
+  - name: Ride API
+    description: APIs for ride booking and trip tracking
+
+paths:
+
+  /rides:
+    post:
+      tags:
+        - Ride API
+      summary: Create a ride request
+      description: Customer creates a new ride request.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RideRequest'
+      responses:
+        '201':
+          description: Ride request created successfully
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+
+  /rides/{rideId}:
+    get:
+      tags:
+        - Ride API
+      summary: Get ride information
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RideId'
+      responses:
+        '200':
+          description: Ride information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ride'
+        '404':
+          description: Ride not found
+
+  /rides/{rideId}/status:
+    get:
+      tags:
+        - Ride API
+      summary: Get ride status
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RideId'
+      responses:
+        '200':
+          description: Current ride status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rideId:
+                    type: string
+                  status:
+                    $ref: '#/components/schemas/RideStatus'
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    RideId:
+      name: rideId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Unique ride ID
+
+  schemas:
+
+    RideRequest:
+      type: object
+      required:
+        - pickupLocation
+        - destination
+        - vehicleType
+      properties:
+        pickupLocation:
+          type: string
+          example: 123 Nguyen Trai, District 1
+        destination:
+          type: string
+          example: 456 Le Loi, District 1
+        vehicleType:
+          type: string
+          example: CAR
+
+    Ride:
+      type: object
+      properties:
+        rideId:
+          type: string
+        customerId:
+          type: string
+        driverId:
+          type: string
+          nullable: true
+        pickupLocation:
+          type: string
+        destination:
+          type: string
+        vehicleType:
+          type: string
+        status:
+          $ref: '#/components/schemas/RideStatus'
+        estimatedFare:
+          type: number
+          format: double
+        finalFare:
+          type: number
+          format: double
+          nullable: true
+
+    RideStatus:
+      type: string
+      enum:
+        - REQUESTED
+        - SEARCHING_DRIVER
+        - DRIVER_ASSIGNED
+        - DRIVER_ARRIVING
+        - DRIVER_ARRIVED
+        - PASSENGER_PICKED_UP
+        - IN_PROGRESS
+        - COMPLETED
+        - CANCELLED
+        - NO_DRIVER
