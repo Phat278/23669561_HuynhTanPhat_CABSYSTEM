@@ -1,1 +1,70 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Rating API
+  description: API đánh giá tài xế sau chuyến đi.
+  version: 1.0.0
 
+servers:
+  - url: http://localhost:8080/api
+
+tags:
+  - name: Rating API
+    description: APIs for driver rating
+
+paths:
+
+  /ratings/{rideId}:
+    post:
+      tags:
+        - Rating API
+      summary: Rate a driver
+      description: Customer rates the driver after completing a ride.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RideId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RatingRequest'
+      responses:
+        '201':
+          description: Rating submitted successfully
+        '400':
+          description: Invalid rating
+        '404':
+          description: Ride not found
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    RideId:
+      name: rideId
+      in: path
+      required: true
+      schema:
+        type: string
+
+  schemas:
+
+    RatingRequest:
+      type: object
+      required:
+        - score
+      properties:
+        score:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 5
+        comment:
+          type: string
+          example: Driver was friendly and professional.
