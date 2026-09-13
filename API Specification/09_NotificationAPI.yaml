@@ -1,1 +1,81 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Notification API
+  description: API quản lý thông báo liên quan đến chuyến xe.
+  version: 1.0.0
 
+servers:
+  - url: http://localhost:8080/api
+
+tags:
+  - name: Notification API
+    description: APIs for ride notifications
+
+paths:
+
+  /notifications:
+    get:
+      tags:
+        - Notification API
+      summary: Get notifications
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Notification list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+
+  /notifications/{notificationId}/read:
+    put:
+      tags:
+        - Notification API
+      summary: Mark notification as read
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/NotificationId'
+      responses:
+        '200':
+          description: Notification marked as read
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+
+    NotificationId:
+      name: notificationId
+      in: path
+      required: true
+      schema:
+        type: string
+
+  schemas:
+
+    Notification:
+      type: object
+      properties:
+        notificationId:
+          type: string
+        userId:
+          type: string
+        type:
+          type: string
+          example: DRIVER_ASSIGNED
+        message:
+          type: string
+        read:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
