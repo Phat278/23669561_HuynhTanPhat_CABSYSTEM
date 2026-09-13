@@ -1,1 +1,227 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Driver API
+  description: API quản lý tài xế và thực hiện chuyến xe.
+  version: 1.0.0
 
+servers:
+  - url: http://localhost:8080/api
+
+tags:
+  - name: Driver API
+    description: APIs for driver management and trip execution
+
+paths:
+
+  /drivers/{driverId}:
+    get:
+      tags:
+        - Driver API
+      summary: Get driver information
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/DriverId'
+      responses:
+        '200':
+          description: Driver information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Driver'
+
+    put:
+      tags:
+        - Driver API
+      summary: Update driver profile
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/DriverId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverUpdate'
+      responses:
+        '200':
+          description: Driver profile updated successfully
+
+  /drivers/{driverId}/availability:
+    put:
+      tags:
+        - Driver API
+      summary: Update driver availability
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/DriverId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - available
+              properties:
+                available:
+                  type: boolean
+                  example: true
+      responses:
+        '200':
+          description: Driver availability updated
+
+  /drivers/{driverId}/location:
+    put:
+      tags:
+        - Driver API
+      summary: Update driver location
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/DriverId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - latitude
+                - longitude
+              properties:
+                latitude:
+                  type: number
+                  format: double
+                longitude:
+                  type: number
+                  format: double
+      responses:
+        '200':
+          description: Driver location updated
+
+  /rides/{rideId}/accept:
+    post:
+      tags:
+        - Driver API
+      summary: Accept a ride
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RideId'
+      responses:
+        '200':
+          description: Ride accepted successfully
+        '400':
+          description: Ride cannot be accepted
+
+  /rides/{rideId}/reject:
+    post:
+      tags:
+        - Driver API
+      summary: Reject a ride
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RideId'
+      responses:
+        '200':
+          description: Ride rejected successfully
+
+  /rides/{rideId}/status:
+    put:
+      tags:
+        - Driver API
+      summary: Update ride status
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RideId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum:
+                    - DRIVER_ARRIVING
+                    - DRIVER_ARRIVED
+                    - PASSENGER_PICKED_UP
+                    - IN_PROGRESS
+                    - COMPLETED
+      responses:
+        '200':
+          description: Ride status updated successfully
+
+  /drivers/{driverId}/rides:
+    get:
+      tags:
+        - Driver API
+      summary: Get driver's rides
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/DriverId'
+      responses:
+        '200':
+          description: List of driver's rides
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    DriverId:
+      name: driverId
+      in: path
+      required: true
+      schema:
+        type: string
+
+    RideId:
+      name: rideId
+      in: path
+      required: true
+      schema:
+        type: string
+
+  schemas:
+
+    Driver:
+      type: object
+      properties:
+        driverId:
+          type: string
+        name:
+          type: string
+        phone:
+          type: string
+        available:
+          type: boolean
+        vehicleType:
+          type: string
+
+    DriverUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
