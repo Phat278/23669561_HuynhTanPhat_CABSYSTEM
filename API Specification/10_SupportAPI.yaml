@@ -1,1 +1,70 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Support API
+  description: API hỗ trợ nhân viên vận hành xử lý chuyến xe gặp sự cố.
+  version: 1.0.0
 
+servers:
+  - url: http://localhost:8080/api
+
+tags:
+  - name: Support API
+    description: APIs for operational support
+
+paths:
+
+  /support/rides/{rideId}:
+    post:
+      tags:
+        - Support API
+      summary: Handle a failed ride
+      description: Operations staff records support information for a failed ride.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/RideId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupportRequest'
+      responses:
+        '200':
+          description: Support request handled successfully
+        '404':
+          description: Ride not found
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+
+    RideId:
+      name: rideId
+      in: path
+      required: true
+      schema:
+        type: string
+
+  schemas:
+
+    SupportRequest:
+      type: object
+      required:
+        - issue
+      properties:
+        issue:
+          type: string
+          example: Driver did not arrive at pickup location.
+        resolution:
+          type: string
+          example: Contacted another available driver.
+        note:
+          type: string
+          example: Customer was informed about the issue.
