@@ -1,1 +1,88 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Admin API
+  description: API quản trị và giám sát hệ thống.
+  version: 1.0.0
 
+servers:
+  - url: http://localhost:8080/api
+
+tags:
+  - name: Admin API
+    description: APIs for operations staff
+
+paths:
+
+  /admin/customers:
+    get:
+      tags:
+        - Admin API
+      summary: Get customers
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Customer list
+
+  /admin/drivers:
+    get:
+      tags:
+        - Admin API
+      summary: Get drivers
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Driver list
+
+  /admin/vehicles:
+    get:
+      tags:
+        - Admin API
+      summary: Get vehicles
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Vehicle list
+
+  /admin/rides:
+    get:
+      tags:
+        - Admin API
+      summary: Get all rides
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Ride list
+
+  /admin/rides/ongoing:
+    get:
+      tags:
+        - Admin API
+      summary: Get ongoing rides
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Ongoing ride list
+
+  /admin/drivers/status:
+    get:
+      tags:
+        - Admin API
+      summary: Check driver status
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Driver status list
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
